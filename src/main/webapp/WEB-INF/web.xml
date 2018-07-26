@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+  	 <display-name>abel-shiro Application</display-name>
+  	 
+  	 <!-- 指定上下文配置文件 -->
+  	 <context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+				 classpath:applicationContext.xml
+		</param-value>
+	</context-param>
+	
+	<!-- spring监听器，监听springMvc环境 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- 压入项目路径 -->
+	<listener>
+	   <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+	</listener>
+	
+	<!-- 配置Shiro过滤器,先让Shiro过滤系统接收到的请求 -->  
+    <!-- 通常将这段代码中的filter-mapping放在所有filter-mapping之前，以达到shiro是第一个对web请求进行拦截过滤之目的。
+    	这里的fileter-name(shiroFilter) 对应下面applicationContext.xml中的<bean id="shiroFilter" /> 
+    	DelegatingFilterProxy会自动到Spring容器中查找名字为shiroFilter的bean并把filter请求交给它处理-->  
+    <!-- 使用[/*]匹配所有请求,保证所有的可控请求都经过Shiro的过滤 -->  
+    <filter>  
+        <filter-name>shiroFilter</filter-name>  
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>  
+        <init-param>  
+            <!-- 该值缺省为false,表示生命周期由SpringApplicationContext管理,设置为true则表示由ServletContainer管理   -->
+            <param-name>targetFilterLifecycle</param-name>  
+            <param-value>true</param-value>  
+        </init-param>  
+    </filter>  
+    <filter-mapping>  
+        <filter-name>shiroFilter</filter-name>  
+        <url-pattern>/*</url-pattern>  
+    </filter-mapping>
+  
+	 <!-- springMvc前置总控制器，在分发其它的控制器前都要经过这个总控制器 -->
+	 <servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring-shiro.xml</param-value>
+		</init-param>
+		<!-- 启动顺序 -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+		<!-- 
+		<url-pattern>/</url-pattern>  会匹配到/login这样的路径型url，不会匹配到模式为*.jsp这样的后缀型url
+		<url-pattern>/*</url-pattern> 会匹配所有url：路径型的和后缀型的url(包括/login,*.jsp,*.js和*.html等)
+		 -->
+	</servlet-mapping>
+	
+</web-app>

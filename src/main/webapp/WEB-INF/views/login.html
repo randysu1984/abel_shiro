@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shiro login</title>
+</head>
+<body>
+<form action="/login/auth" method="post">
+<div><label>用户名</label><input type="text" name="loginname" /></div>
+<div><label>密&nbsp;码</label><input type="text" name="password" /></div>
+<div><label>验证码</label><input type="text" name="captcha" /><img src="/genCaptcha" /></div>
+<div><input type="submit" value="登录" /></div>
+</form>
+</body>
+</html>
